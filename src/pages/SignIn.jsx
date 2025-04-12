@@ -3,19 +3,18 @@ export default function SignIn() {
 		<>
 			<div className="flex justify-center items-center min-h-screen">
 				<div className="</div>">
-					<div className="text-xl font-bold text-center">サインイン</div>
 					<form className="w-full max-w-sm space-y-4">
-						<label for="email">メールアドレス</label>
+						<label htmlFor="email">メールアドレス</label>
 						<input
 							type="email"
-							name="email"
+							id="email"
 							className="w-full px-3 py-2 border rounded"
 							placeholder="example@email.com"
 						/>
-						<label for="password">パスワード</label>
+						<label htmlFor="password">パスワード</label>
 						<input
 							type="password"
-							name="password"
+							id="password"
 							className="w-full px-3 py-2 border rounded"
 							placeholder="password"
 						/>
