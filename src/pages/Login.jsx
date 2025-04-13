@@ -1,6 +1,9 @@
+import { Link, useNavigate } from "react-router";
 import { FormInput } from "../components/FormInput";
+import { useLogin } from "../features/login/hooks/useLogin";
 import { useLogInForm } from "../features/login/hooks/useLogInForm";
 import { validationRules } from "../utils/validationRule";
+import { useEffect } from "react";
 
 export default function Login() {
 	const {
@@ -9,8 +12,17 @@ export default function Login() {
 		formState: { errors },
 	} = useLogInForm();
 
-	const onSubmit = (data) => {
-		console.log(data);
+	const { login, data, error, loading } = useLogin();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (data) {
+			navigate("/books");
+		}
+	}, [data, navigate]); // dataが更新されたら遷移
+
+	const onSubmit = async (formData) => {
+		await login(formData);
 	};
 
 	return (
@@ -39,12 +51,29 @@ export default function Login() {
 					validation={validationRules.password}
 					error={errors.password?.message}
 				/>
+
+				{loading && <p className="text-gray-500 text-sm">送信中...</p>}
+				{error && (
+					<p className="text-red-500 text-sm">
+						{error.response?.data?.ErrorMessageJP || "エラーが発生しました"}
+					</p>
+				)}
+				{data && (
+					<p className="text-green-500 text-sm">ログインに成功しました！</p>
+				)}
+
 				<button
 					type="submit"
 					className="w-full py-2 bg-blue-500 text-white rounded"
 				>
 					ログイン
 				</button>
+				<Link
+					to="/signin"
+					className="text-gray-500 hover:text-gray-700 text-sm flex justify-center"
+				>
+					新規登録
+				</Link>
 			</form>
 		</div>
 	);
