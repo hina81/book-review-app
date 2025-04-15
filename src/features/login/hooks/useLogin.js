@@ -5,6 +5,7 @@ export const useLogin = () => {
 	const [data, setData] = useState(null);
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const [token, setToken] = useState(null);
 
 	const login = async (formData) => {
 		setLoading(true);
@@ -14,6 +15,7 @@ export const useLogin = () => {
 				formData,
 			);
 			setData(response.data);
+			setToken(response.data.token);
 		} catch (err) {
 			setError(err);
 		} finally {
@@ -21,5 +23,5 @@ export const useLogin = () => {
 		}
 	};
 
-	return { login, data, error, loading };
+	return { login, data, error, loading, token };
 };
