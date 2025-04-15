@@ -4,8 +4,7 @@ export const useSignInForm = () => {
 	return useForm({
 		reValidateMode: "onSubmit",
 		defaultValues: {
-			lastName: "",
-			firstName: "",
+			name: "",
 			email: "",
 			password: "",
 		},
