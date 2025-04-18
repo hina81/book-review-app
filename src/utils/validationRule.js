@@ -10,4 +10,7 @@ export const validationRules = {
 		required: "パスワードを入力してください",
 		minLength: { value: 6, message: "6文字以上で入力してください" },
 	},
+	icon: {
+		required: "アイコンを登録してください",
+	}
 };

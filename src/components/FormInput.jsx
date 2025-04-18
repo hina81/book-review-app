@@ -6,6 +6,7 @@ export const FormInput = ({
 	type = "text",
 	register,
 	validation,
+	onChange,
 }) => (
 	<div>
 		<label htmlFor={id} className="block text-sm mb-1">
@@ -14,7 +15,7 @@ export const FormInput = ({
 		<input
 			id={id}
 			type={type}
-			{...register(id, validation)}
+			{...(type === "file" ? { onChange } : register(id, validation))}
 			placeholder={placeholder}
 			className="w-full px-3 py-2 border rounded"
 		/>

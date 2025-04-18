@@ -1,29 +1,54 @@
 import { FormInput } from "../components/FormInput";
-import { useSignin } from "../features/signin/hooks/useSignin";
-import { useSignInForm } from "../features/signin/hooks/useSignInForm";
 import { validationRules } from "../utils/validationRule";
 import { Link } from "react-router-dom";
-import { UploadIcon } from "../components/UploadIcon";
-import { useUploadIcon } from "../hooks/useUploadIcon";
+import { useSignin } from "../features/signin/hooks/useSignin";
+import { useSignInForm } from "../features/signin/hooks/useSignInForm";
+import { useIcon } from "../hooks/useIcon";
+import { useIconForm } from "../hooks/useIconForm";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
 	const {
 		register,
-		handleSubmit,
+		handleSubmit: handleSignInSubmit,
 		formState: { errors },
 	} = useSignInForm();
 
+	const {
+		register: iconRegister,
+		handleSubmit: handleIconSubmit,
+		formState: { errors: iconErrors },
+	} = useIconForm();
+
 	const { signin, data, error, loading, token } = useSignin();
-	const { iconError, iconLoading } = useUploadIcon();
+	const { handleFileChange, upload, iconError, setIconError, iconLoading } =
+		useIcon(token);
+	const [isUploadSuccess, setUploadSuccess] = useState(false);
 
 	const onSubmit = async (formData) => {
 		await signin(formData);
 	};
 
+	const navigate = useNavigate();
+	const onSubmitIcon = async () => {
+		try {
+			await upload();
+			setUploadSuccess(true);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+	useEffect(() => {
+		if (isUploadSuccess && !iconError) {
+			navigate("/books");
+		}
+	}, [isUploadSuccess, iconError, navigate]);
+
 	return (
 		<div className="flex justify-center items-center min-h-screen">
 			<div className="w-full max-w-sm space-y-4">
-				<form onSubmit={handleSubmit(onSubmit)}>
+				<form onSubmit={handleSignInSubmit(onSubmit)}>
 					<h2 className="flex justify-center">新規登録</h2>
 
 					<FormInput
@@ -56,7 +81,7 @@ export default function SignIn() {
 					/>
 
 					{loading && <p className="text-gray-500 text-sm">送信中...</p>}
-					{error && (
+					{error && !token && (
 						<p className="text-red-500 text-sm">
 							{error.response?.data?.ErrorMessageJP || "エラーが発生しました"}
 						</p>
@@ -65,7 +90,6 @@ export default function SignIn() {
 						<p className="text-green-500 text-sm">登録に成功しました！</p>
 					)}
 
-					{/* dataがある時ボタンは非表示 */}
 					{!data && (
 						<button
 							type="submit"
@@ -77,23 +101,37 @@ export default function SignIn() {
 					)}
 				</form>
 
-				{/* tokenがある時表示 */}
-				{token && <UploadIcon token={token} />}
-				{token && (
-					<Link
-						to="/books"
-						className="w-full py-2 mt-2 bg-blue-500 text-white rounded block text-center"
-					>
-						登録
-					</Link>
-				)}
+				<form onSubmit={handleIconSubmit(onSubmitIcon)}>
+					{token && (
+						<FormInput
+							label="アイコン"
+							id="icon"
+							type="file"
+							onChange={handleFileChange}
+							register={iconRegister}
+							validation={validationRules.icon}
+							error={iconErrors.icon?.message}
+						/>
+					)}
+					{iconLoading && <p className="text-gray-500 text-sm">送信中...</p>}
+					{iconError && (
+						<p className="text-red-500 text-sm">
+							{iconError.response?.data?.ErrorMessageJP ||
+								"エラーが発生しました"}
+						</p>
+					)}
+					{token && (
+						<button
+							type="submit"
+							className="w-full py-2 mt-2 bg-blue-500 text-white rounded"
+							disabled={iconLoading}
+							onClick={() => setIconError(null)}
+						>
+							登録
+						</button>
+					)}
+				</form>
 
-				{iconLoading && <p className="text-gray-500 text-sm">送信中...</p>}
-				{iconError && (
-					<p className="text-red-500 text-sm">
-						{iconError.response?.data?.ErrorMessageJP || "エラーが発生しました"}
-					</p>
-				)}
 				<Link
 					to="/login"
 					className="text-gray-500 hover:text-gray-700 text-sm flex justify-center"
