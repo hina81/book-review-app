@@ -1,19 +1,21 @@
-import { FormInput } from "../components/FormInput";
-import { validationRules } from "../utils/validationRule";
-import { Link } from "react-router-dom";
-import { useSignin } from "../features/signin/hooks/useSignin";
-import { useSignInForm } from "../features/signin/hooks/useSignInForm";
-import { useIcon } from "../hooks/useIcon";
-import { useIconForm } from "../hooks/useIconForm";
+import { useSignup } from "../hooks/useSignup";
+import { useSignupForm } from "../hooks/useSignupForm";
+
+import { useIcon } from "../../../hooks/useIcon";
+import { useIconForm } from "../../../hooks/useIconForm";
+import { FormInput } from "../../../components/FormInput";
+import { validationRules } from "../../../utils/validationRule";
+
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-export default function SignIn() {
+export default function Signup() {
 	const {
 		register,
-		handleSubmit: handleSignInSubmit,
+		handleSubmit: handleSignupSubmit,
 		formState: { errors },
-	} = useSignInForm();
+	} = useSignupForm();
 
 	const {
 		register: iconRegister,
@@ -21,13 +23,13 @@ export default function SignIn() {
 		formState: { errors: iconErrors },
 	} = useIconForm();
 
-	const { signin, data, error, loading, token } = useSignin();
+	const { signup, error, loading, token } = useSignup();
 	const { handleFileChange, upload, iconError, setIconError, iconLoading } =
 		useIcon(token);
 	const [isUploadSuccess, setUploadSuccess] = useState(false);
 
 	const onSubmit = async (formData) => {
-		await signin(formData);
+		await signup(formData);
 	};
 
 	const navigate = useNavigate();
@@ -48,7 +50,7 @@ export default function SignIn() {
 	return (
 		<div className="flex justify-center items-center min-h-screen">
 			<div className="w-full max-w-sm space-y-4">
-				<form onSubmit={handleSignInSubmit(onSubmit)}>
+				<form onSubmit={handleSignupSubmit(onSubmit)}>
 					<h2 className="flex justify-center">新規登録</h2>
 
 					<FormInput
@@ -86,11 +88,11 @@ export default function SignIn() {
 							{error.response?.data?.ErrorMessageJP || "エラーが発生しました"}
 						</p>
 					)}
-					{data && (
+					{token && (
 						<p className="text-green-500 text-sm">登録に成功しました！</p>
 					)}
 
-					{!data && (
+					{!token && (
 						<button
 							type="submit"
 							className="w-full py-2 mt-2 bg-blue-500 text-white rounded"
